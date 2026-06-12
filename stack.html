@@ -23,29 +23,90 @@
     </header>
 
     <main class="page-shell">
-      <section class="page-hero" aria-labelledby="stack-title">
-        <p class="eyebrow">Skill manual</p>
-        <h1 id="stack-title">能力：把“先这样吧”修到“还能看”。</h1>
-        <p>以下内容经过适度夸张处理，但页面确实是我亲手搭的，CSS 也确实没逃跑。</p>
+      <section class="page-hero page-hero-split" aria-labelledby="stack-title">
+        <div>
+          <p class="eyebrow">Skill laboratory</p>
+          <h1 id="stack-title">能力说明书：看起来很会，实际上也在努力很会。</h1>
+          <p>
+            我擅长把“这个能不能简单做一下”翻译成结构、样式、交互和部署，
+            中途顺便安抚几个不听话的边距。
+          </p>
+        </div>
+        <aside class="page-note">
+          <span>熟练度</span>
+          <strong>还在升级</strong>
+          <p>技能树没有点满，但已经学会先备份再大胆折腾。</p>
+        </aside>
       </section>
 
-      <section class="section stack-section">
-        <div class="stack-layout">
-          <ul class="skill-list" aria-label="能力列表">
-            <li><span>01</span> 会把需求拆小，小到它不好意思继续膨胀。</li>
-            <li><span>02</span> 会写响应式页面，让手机和电脑都觉得自己被尊重。</li>
-            <li><span>03</span> 会给按钮、间距、颜色做体检，直到它们看起来没那么慌。</li>
-            <li><span>04</span> 会用 GitHub Pages 发布静态站，省钱、省心、省服务器脾气。</li>
-          </ul>
+      <section class="section capability-section" aria-labelledby="capability-title">
+        <div class="section-heading">
+          <p class="eyebrow">Capabilities</p>
+          <h2 id="capability-title">四个常用技能槽</h2>
+        </div>
 
-          <div class="tool-cloud" aria-label="技术关键词">
-            <span>HTML</span>
-            <span>CSS</span>
-            <span>JavaScript</span>
-            <span>GitHub Pages</span>
-            <span>Responsive UI</span>
-            <span>Bug Negotiation</span>
+        <div class="capability-grid">
+          <article class="capability-card">
+            <span>01</span>
+            <h3>页面搭建</h3>
+            <p>把空白页面从“什么都没有”推进到“至少看起来很有安排”。</p>
+          </article>
+          <article class="capability-card">
+            <span>02</span>
+            <h3>样式收拾</h3>
+            <p>处理颜色、间距、排版和移动端，让界面少一点临时工气质。</p>
+          </article>
+          <article class="capability-card">
+            <span>03</span>
+            <h3>交互打磨</h3>
+            <p>让按钮有反馈，让导航不迷路，让用户少问一句“我在哪”。</p>
+          </article>
+          <article class="capability-card">
+            <span>04</span>
+            <h3>部署上线</h3>
+            <p>把文件推到 GitHub Pages，完成从本地快乐到公开快乐的迁徙。</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section stack-section" aria-labelledby="toolbox-title">
+        <div class="stack-layout">
+          <div>
+            <p class="eyebrow">Workflow</p>
+            <h2 id="toolbox-title">工作流，不玄学，主要靠反复看。</h2>
+            <ul class="skill-list" aria-label="工作流列表">
+              <li><span>01</span> 先把需求拆开，防止它在角落里偷偷长大。</li>
+              <li><span>02</span> 先做能用的版本，再把它收拾到愿意被截图。</li>
+              <li><span>03</span> 桌面端看一遍，移动端再看一遍，然后继续皱眉。</li>
+              <li><span>04</span> 提交前检查路径、链接和那些很会躲的错别字。</li>
+            </ul>
           </div>
+
+          <div class="tool-panel">
+            <p class="panel-kicker dark">Toolbox</p>
+            <div class="tool-cloud" aria-label="技术关键词">
+              <span>HTML</span>
+              <span>CSS</span>
+              <span>JavaScript</span>
+              <span>GitHub Pages</span>
+              <span>Responsive UI</span>
+              <span>Static Sites</span>
+              <span>Layout Debugging</span>
+              <span>Copy Polishing</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section meter-section" aria-labelledby="meter-title">
+        <div class="section-heading compact-heading">
+          <p class="eyebrow">Meters</p>
+          <h2 id="meter-title">能力仪表盘</h2>
+        </div>
+        <div class="meter-list">
+          <div class="meter-row"><span>把页面扶正</span><strong style="--value: 88%"></strong><em>88%</em></div>
+          <div class="meter-row"><span>和 CSS 讲道理</span><strong style="--value: 82%"></strong><em>82%</em></div>
+          <div class="meter-row"><span>命名变量不后悔</span><strong style="--value: 64%"></strong><em>64%</em></div>
         </div>
       </section>
     </main>

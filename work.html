@@ -23,43 +23,105 @@
     </header>
 
     <main class="page-shell">
-      <section class="page-hero" aria-labelledby="work-title">
-        <p class="eyebrow">Selected chaos</p>
-        <h1 id="work-title">作品，不保证每个都正经，但都努力能点。</h1>
-        <p>这里是 ReeveByte 的陈列柜：有些项目已经能上桌，有些还在厨房里冒着灵感味。</p>
+      <section class="page-hero page-hero-split" aria-labelledby="work-title">
+        <div>
+          <p class="eyebrow">Work buffet</p>
+          <h1 id="work-title">作品陈列柜：能跑，能看，偶尔还能交作业。</h1>
+          <p>
+            这里不摆“改变世界”的大话，只摆一些被我从灵感草稿里捞出来、
+            擦干净、接上电源、并成功没有当场冒烟的小东西。
+          </p>
+        </div>
+        <aside class="page-note">
+          <span>今日展品</span>
+          <strong>3 件半</strong>
+          <p>半件是因为还有个想法只写了标题，但标题非常自信。</p>
+        </aside>
       </section>
 
-      <section class="section work-section">
-        <div class="work-grid">
-          <article class="work-card">
+      <section class="section featured-work" aria-labelledby="featured-title">
+        <div class="section-heading">
+          <p class="eyebrow">Featured</p>
+          <h2 id="featured-title">主菜区</h2>
+        </div>
+
+        <article class="feature-case">
+          <div class="case-index">01</div>
+          <div>
+            <p class="case-label">GitHub Pages 个人主页</p>
+            <h3>把个人介绍做成一个认真胡闹的门面。</h3>
+            <p>
+              纯静态、可直接部署、移动端友好。主要功能是让访客先笑一下，
+              再发现这个人好像真的会写页面。
+            </p>
+          </div>
+          <a class="button secondary" href="index.html">
+            <span aria-hidden="true">□</span>
+            回首页验货
+          </a>
+        </article>
+      </section>
+
+      <section class="section work-section" aria-labelledby="work-list-title">
+        <div class="section-heading compact-heading">
+          <p class="eyebrow">Shelf</p>
+          <h2 id="work-list-title">小项目货架</h2>
+        </div>
+
+        <div class="showcase-grid">
+          <article class="showcase-card">
             <div class="card-topline">
               <span class="dot teal"></span>
-              <span>01</span>
+              <span>笔记型</span>
             </div>
             <h3>知识库自助餐</h3>
-            <p>把零散笔记摆成一排，假装它们从一开始就很有逻辑。</p>
-            <a href="https://github.com/reevebyte" target="_blank" rel="noreferrer">去 GitHub 翻菜单</a>
+            <p>把散落的学习记录摆成一排，让它们看起来像有组织的知识，而不是深夜灵感事故现场。</p>
+            <ul class="mini-list">
+              <li>工程笔记</li>
+              <li>复盘草稿</li>
+              <li>长期补坑</li>
+            </ul>
           </article>
 
-          <article class="work-card">
+          <article class="showcase-card">
             <div class="card-topline">
               <span class="dot coral"></span>
-              <span>02</span>
+              <span>页面型</span>
             </div>
             <h3>静态网页变装秀</h3>
-            <p>没有构建工具，没有花哨后台，只有 HTML、CSS 和一颗想出片的心。</p>
-            <a href="index.html">回主页验货</a>
+            <p>不用复杂后台，也能把一个页面打扮得像刚从设计会议里全身而退。</p>
+            <ul class="mini-list">
+              <li>响应式布局</li>
+              <li>视觉细节</li>
+              <li>部署省心</li>
+            </ul>
           </article>
 
-          <article class="work-card">
+          <article class="showcase-card">
             <div class="card-topline">
               <span class="dot amber"></span>
-              <span>03</span>
+              <span>工具型</span>
             </div>
             <h3>自动化小卖部</h3>
-            <p>专治重复劳动：把“我再点一次”改成“它自己去点”。</p>
-            <a href="contact.html">下单一个想法</a>
+            <p>专治重复劳动：把“我再点一次”变成“让程序去，它比较有空”。</p>
+            <ul class="mini-list">
+              <li>流程整理</li>
+              <li>脚本辅助</li>
+              <li>少点几下</li>
+            </ul>
           </article>
+        </div>
+      </section>
+
+      <section class="section status-board" aria-labelledby="status-title">
+        <div class="section-heading compact-heading">
+          <p class="eyebrow">Status</p>
+          <h2 id="status-title">项目天气预报</h2>
+        </div>
+        <div class="status-rows">
+          <div><span>正在施工</span><strong>页面精装修</strong><em>油漆味很淡，灵感味很重</em></div>
+          <div><span>等待排期</span><strong>博客栏目</strong><em>标题已想好，内容正在装睡</em></div>
+          <div><span>持续维护</span><strong>个人主页</strong><em>遇到不顺眼的间距就现场教育</em></div>
         </div>
       </section>
     </main>
