@@ -2,9 +2,15 @@ const header = document.querySelector("[data-header]");
 const year = document.querySelector("[data-year]");
 const heroImage = document.querySelector(".hero-image");
 
-year.textContent = new Date().getFullYear();
+if (year) {
+  year.textContent = new Date().getFullYear();
+}
 
 const updateHeader = () => {
+  if (!header) {
+    return;
+  }
+
   header.classList.toggle("is-scrolled", window.scrollY > 24);
 };
 

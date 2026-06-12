@@ -5,31 +5,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta
       name="description"
-      content="ReeveByte 的个人主页，记录工程实践、产品想法与持续构建的作品。"
+      content="ReeveByte 的恶搞个人主页：认真写代码，顺手把按钮擦亮。"
     />
     <meta name="theme-color" content="#0f4c5c" />
-    <meta property="og:title" content="ReeveByte | Personal Profile" />
+    <meta property="og:title" content="ReeveByte | 严肃胡闹研究所" />
     <meta
       property="og:description"
-      content="用清晰的代码、克制的设计和稳定的交付，把想法做成可使用的作品。"
+      content="这里生产可运行的页面、离谱的文案，以及偶尔真的有用的项目。"
     />
     <meta property="og:type" content="website" />
     <meta property="og:image" content="assets/hero-reevebyte.png" />
-    <title>ReeveByte | Personal Profile</title>
+    <title>ReeveByte | 严肃胡闹研究所</title>
+    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
     <link rel="preload" as="image" href="assets/hero-reevebyte.png" />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
     <header class="site-header" data-header>
-      <a class="brand" href="#top" aria-label="ReeveByte home">
+      <a class="brand" href="index.html" aria-label="ReeveByte home">
         <span class="brand-mark">Rb</span>
         <span>ReeveByte</span>
       </a>
 
       <nav class="site-nav" aria-label="主导航">
-        <a href="#work">作品</a>
-        <a href="#stack">能力</a>
-        <a href="#contact">联系</a>
+        <a href="work.html"><span class="nav-icon" aria-hidden="true">□</span>作品</a>
+        <a href="stack.html"><span class="nav-icon" aria-hidden="true">△</span>能力</a>
+        <a href="contact.html"><span class="nav-icon" aria-hidden="true">@</span>联系</a>
       </nav>
     </header>
 
@@ -43,21 +44,21 @@
         <div class="hero-overlay"></div>
 
         <div class="hero-content">
-          <p class="eyebrow">Personal profile / GitHub Pages</p>
+          <p class="eyebrow">Certified nonsense / GitHub Pages</p>
           <h1 id="hero-title">ReeveByte</h1>
           <p class="hero-lede">
-            我是 MONSTER，喜欢把复杂问题拆成清晰系统，用代码、审美和一点耐心，
-            打磨稳定、漂亮、真正能被使用的数字作品。
+            我是 MONSTER，白天和 bug 谈判，晚上给按钮做心理建设。
+            这里是我的网络小摊：卖点代码、摆点作品，顺便展示一下如何把正经页面写得不太正经。
           </p>
 
           <div class="hero-actions" aria-label="主要操作">
-            <a class="button primary" href="https://github.com/reevebyte" target="_blank" rel="noreferrer">
-              <span aria-hidden="true">↗</span>
-              GitHub
+            <a class="button primary" href="work.html">
+              <span aria-hidden="true">□</span>
+              参观离谱作品
             </a>
-            <a class="button ghost" href="mailto:mo0nster@163.com">
+            <a class="button ghost" href="contact.html">
               <span aria-hidden="true">@</span>
-              Email
+              投递神秘信号
             </a>
           </div>
         </div>
@@ -65,17 +66,17 @@
         <aside class="profile-panel" aria-label="个人摘要">
           <div class="avatar" aria-hidden="true">M</div>
           <div>
-            <p class="panel-kicker">Available for</p>
-            <p class="panel-title">Web design, frontend builds, creative tools</p>
+            <p class="panel-kicker">今日营业</p>
+            <p class="panel-title">会写网页，会改文案，会把需求先哄到冷静</p>
           </div>
           <dl class="quick-stats">
             <div>
-              <dt>Focus</dt>
-              <dd>Frontend</dd>
+              <dt>状态</dt>
+              <dd>代码冒烟中</dd>
             </div>
             <div>
-              <dt>Style</dt>
-              <dd>Clean & useful</dd>
+              <dt>风格</dt>
+              <dd>严肃胡闹</dd>
             </div>
           </dl>
         </aside>
@@ -84,98 +85,36 @@
       <section class="section intro" aria-labelledby="intro-title">
         <div class="section-heading">
           <p class="eyebrow">About</p>
-          <h2 id="intro-title">把想法做成能长期运行的界面。</h2>
+          <h2 id="intro-title">把灵感拧成网页，把网页拧成能点的东西。</h2>
         </div>
         <p>
-          这个主页是一个轻量的个人入口：展示作品、技术方向和联系方式。它不依赖任何构建工具，
-          直接推送到 GitHub Pages 就能发布；后续也可以很自然地扩展成博客、作品集或简历页。
+          本站不假装自己是宇宙级产品发布会。它就是一个干净、好看、能跑的个人主页：
+          点“作品”看我把想法加工成页面，点“能力”看我如何假装很有条理，
+          点“联系”则可以把邮件扔进我的收件箱，成功率约等于咖啡浓度。
         </p>
       </section>
 
-      <section class="section work-section" id="work" aria-labelledby="work-title">
-        <div class="section-heading">
-          <p class="eyebrow">Selected work</p>
-          <h2 id="work-title">近期想放在这里的作品方向</h2>
-        </div>
-
-        <div class="work-grid">
-          <article class="work-card">
-            <div class="card-topline">
-              <span class="dot teal"></span>
-              <span>01</span>
-            </div>
-            <h3>个人知识库与博客</h3>
-            <p>沉淀工程笔记、学习路线、项目复盘，让零散经验有结构地生长。</p>
-            <a href="https://github.com/reevebyte" target="_blank" rel="noreferrer">查看 GitHub</a>
-          </article>
-
-          <article class="work-card">
-            <div class="card-topline">
-              <span class="dot coral"></span>
-              <span>02</span>
-            </div>
-            <h3>静态网站与作品集</h3>
-            <p>用 HTML、CSS 和轻量 JavaScript 构建加载快、维护简单的展示页面。</p>
-            <a href="#contact">聊聊合作</a>
-          </article>
-
-          <article class="work-card">
-            <div class="card-topline">
-              <span class="dot amber"></span>
-              <span>03</span>
-            </div>
-            <h3>实用工具与自动化</h3>
-            <p>把重复流程变成顺手的小工具，让注意力回到更有创造性的事情上。</p>
-            <a href="mailto:mo0nster@163.com">发送邮件</a>
-          </article>
-        </div>
-      </section>
-
-      <section class="section stack-section" id="stack" aria-labelledby="stack-title">
-        <div class="section-heading">
-          <p class="eyebrow">Stack</p>
-          <h2 id="stack-title">偏好的工作方式</h2>
-        </div>
-
-        <div class="stack-layout">
-          <ul class="skill-list" aria-label="能力列表">
-            <li><span>01</span> 以用户路径组织页面，而不是堆砌模块。</li>
-            <li><span>02</span> 用可维护的结构写样式，移动端优先检查。</li>
-            <li><span>03</span> 保持性能、可访问性和视觉细节一起在线。</li>
-            <li><span>04</span> 从小版本开始迭代，持续把作品补完整。</li>
-          </ul>
-
-          <div class="tool-cloud" aria-label="技术关键词">
-            <span>HTML</span>
-            <span>CSS</span>
-            <span>JavaScript</span>
-            <span>GitHub Pages</span>
-            <span>Responsive UI</span>
-            <span>Design Systems</span>
-          </div>
-        </div>
-      </section>
-
-      <section class="section contact-section" id="contact" aria-labelledby="contact-title">
-        <div>
-          <p class="eyebrow">Contact</p>
-          <h2 id="contact-title">欢迎来交换想法。</h2>
-        </div>
-        <div class="contact-actions">
-          <a class="button primary" href="mailto:mo0nster@163.com">
-            <span aria-hidden="true">@</span>
-            mo0nster@163.com
-          </a>
-          <a class="button secondary" href="https://github.com/reevebyte" target="_blank" rel="noreferrer">
-            <span aria-hidden="true">⌘</span>
-            github.com/reevebyte
-          </a>
-        </div>
+      <section class="section teaser-grid" aria-label="快速入口">
+        <a class="teaser-card" href="work.html">
+          <span class="dot teal"></span>
+          <h2>作品陈列柜</h2>
+          <p>放一些能跑、能看、偶尔还能用的数字小发明。</p>
+        </a>
+        <a class="teaser-card" href="stack.html">
+          <span class="dot coral"></span>
+          <h2>能力说明书</h2>
+          <p>用四条看似稳重的句子，描述一种边调试边成长的生活方式。</p>
+        </a>
+        <a class="teaser-card" href="contact.html">
+          <span class="dot amber"></span>
+          <h2>神秘传送门</h2>
+          <p>邮件、GitHub、以及“我突然有个想法”的合法入口。</p>
+        </a>
       </section>
     </main>
 
     <footer class="site-footer">
-      <p>© <span data-year></span> ReeveByte. Built for GitHub Pages.</p>
+      <p>© <span data-year></span> ReeveByte. 认真部署，随缘发光。</p>
       <a href="#top">回到顶部</a>
     </footer>
 
