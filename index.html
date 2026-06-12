@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="ReeveByte 的个人主页，记录工程实践、产品想法与持续构建的作品。"
+    />
+    <meta name="theme-color" content="#0f4c5c" />
+    <meta property="og:title" content="ReeveByte | Personal Profile" />
+    <meta
+      property="og:description"
+      content="用清晰的代码、克制的设计和稳定的交付，把想法做成可使用的作品。"
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="assets/hero-reevebyte.png" />
+    <title>ReeveByte | Personal Profile</title>
+    <link rel="preload" as="image" href="assets/hero-reevebyte.png" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="site-header" data-header>
+      <a class="brand" href="#top" aria-label="ReeveByte home">
+        <span class="brand-mark">Rb</span>
+        <span>ReeveByte</span>
+      </a>
+
+      <nav class="site-nav" aria-label="主导航">
+        <a href="#work">作品</a>
+        <a href="#stack">能力</a>
+        <a href="#contact">联系</a>
+      </nav>
+    </header>
+
+    <main id="top">
+      <section class="hero" aria-labelledby="hero-title">
+        <img
+          class="hero-image"
+          src="assets/hero-reevebyte.png"
+          alt="深色工作台上流动着代码光点与玻璃反射的抽象视觉"
+        />
+        <div class="hero-overlay"></div>
+
+        <div class="hero-content">
+          <p class="eyebrow">Personal profile / GitHub Pages</p>
+          <h1 id="hero-title">ReeveByte</h1>
+          <p class="hero-lede">
+            我是 MONSTER，喜欢把复杂问题拆成清晰系统，用代码、审美和一点耐心，
+            打磨稳定、漂亮、真正能被使用的数字作品。
+          </p>
+
+          <div class="hero-actions" aria-label="主要操作">
+            <a class="button primary" href="https://github.com/reevebyte" target="_blank" rel="noreferrer">
+              <span aria-hidden="true">↗</span>
+              GitHub
+            </a>
+            <a class="button ghost" href="mailto:mo0nster@163.com">
+              <span aria-hidden="true">@</span>
+              Email
+            </a>
+          </div>
+        </div>
+
+        <aside class="profile-panel" aria-label="个人摘要">
+          <div class="avatar" aria-hidden="true">M</div>
+          <div>
+            <p class="panel-kicker">Available for</p>
+            <p class="panel-title">Web design, frontend builds, creative tools</p>
+          </div>
+          <dl class="quick-stats">
+            <div>
+              <dt>Focus</dt>
+              <dd>Frontend</dd>
+            </div>
+            <div>
+              <dt>Style</dt>
+              <dd>Clean & useful</dd>
+            </div>
+          </dl>
+        </aside>
+      </section>
+
+      <section class="section intro" aria-labelledby="intro-title">
+        <div class="section-heading">
+          <p class="eyebrow">About</p>
+          <h2 id="intro-title">把想法做成能长期运行的界面。</h2>
+        </div>
+        <p>
+          这个主页是一个轻量的个人入口：展示作品、技术方向和联系方式。它不依赖任何构建工具，
+          直接推送到 GitHub Pages 就能发布；后续也可以很自然地扩展成博客、作品集或简历页。
+        </p>
+      </section>
+
+      <section class="section work-section" id="work" aria-labelledby="work-title">
+        <div class="section-heading">
+          <p class="eyebrow">Selected work</p>
+          <h2 id="work-title">近期想放在这里的作品方向</h2>
+        </div>
+
+        <div class="work-grid">
+          <article class="work-card">
+            <div class="card-topline">
+              <span class="dot teal"></span>
+              <span>01</span>
+            </div>
+            <h3>个人知识库与博客</h3>
+            <p>沉淀工程笔记、学习路线、项目复盘，让零散经验有结构地生长。</p>
+            <a href="https://github.com/reevebyte" target="_blank" rel="noreferrer">查看 GitHub</a>
+          </article>
+
+          <article class="work-card">
+            <div class="card-topline">
+              <span class="dot coral"></span>
+              <span>02</span>
+            </div>
+            <h3>静态网站与作品集</h3>
+            <p>用 HTML、CSS 和轻量 JavaScript 构建加载快、维护简单的展示页面。</p>
+            <a href="#contact">聊聊合作</a>
+          </article>
+
+          <article class="work-card">
+            <div class="card-topline">
+              <span class="dot amber"></span>
+              <span>03</span>
+            </div>
+            <h3>实用工具与自动化</h3>
+            <p>把重复流程变成顺手的小工具，让注意力回到更有创造性的事情上。</p>
+            <a href="mailto:mo0nster@163.com">发送邮件</a>
+          </article>
+        </div>
+      </section>
+
+      <section class="section stack-section" id="stack" aria-labelledby="stack-title">
+        <div class="section-heading">
+          <p class="eyebrow">Stack</p>
+          <h2 id="stack-title">偏好的工作方式</h2>
+        </div>
+
+        <div class="stack-layout">
+          <ul class="skill-list" aria-label="能力列表">
+            <li><span>01</span> 以用户路径组织页面，而不是堆砌模块。</li>
+            <li><span>02</span> 用可维护的结构写样式，移动端优先检查。</li>
+            <li><span>03</span> 保持性能、可访问性和视觉细节一起在线。</li>
+            <li><span>04</span> 从小版本开始迭代，持续把作品补完整。</li>
+          </ul>
+
+          <div class="tool-cloud" aria-label="技术关键词">
+            <span>HTML</span>
+            <span>CSS</span>
+            <span>JavaScript</span>
+            <span>GitHub Pages</span>
+            <span>Responsive UI</span>
+            <span>Design Systems</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="section contact-section" id="contact" aria-labelledby="contact-title">
+        <div>
+          <p class="eyebrow">Contact</p>
+          <h2 id="contact-title">欢迎来交换想法。</h2>
+        </div>
+        <div class="contact-actions">
+          <a class="button primary" href="mailto:mo0nster@163.com">
+            <span aria-hidden="true">@</span>
+            mo0nster@163.com
+          </a>
+          <a class="button secondary" href="https://github.com/reevebyte" target="_blank" rel="noreferrer">
+            <span aria-hidden="true">⌘</span>
+            github.com/reevebyte
+          </a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p>© <span data-year></span> ReeveByte. Built for GitHub Pages.</p>
+      <a href="#top">回到顶部</a>
+    </footer>
+
+    <script src="script.js"></script>
+  </body>
+</html>
