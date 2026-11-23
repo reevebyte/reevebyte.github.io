@@ -1,0 +1,64 @@
+---
+import { getCollection, render } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { estimateReadingMinutes, formatFullDate } from "../../utils/format";
+
+export async function getStaticPaths() {
+  const notes = (await getCollection("notes", ({ data }) => !data.draft)).sort(
+    (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+  );
+
+  return notes.map((note, index) => ({
+    params: { slug: note.id },
+    props: {
+      note,
+      newer: index > 0 ? notes[index - 1] : null,
+      older: index < notes.length - 1 ? notes[index + 1] : null,
+    },
+  }));
+}
+
+const { note, newer, older } = Astro.props;
+const { Content } = await render(note);
+const readingMinutes = estimateReadingMinutes(note.body ?? "");
+---
+
+<BaseLayout title={note.data.title} description={note.data.description}>
+  <article class="article-wrap">
+    <a class="back-link" href="/notes/">← 返回随笔</a>
+
+    <header>
+      <h1 class="page-h1" style="font-size: clamp(1.85rem, 4vw, 2.5rem);">
+        {note.data.title}
+      </h1>
+      <div class="article-meta">
+        <time datetime={note.data.pubDate.toISOString()}>
+          {formatFullDate(note.data.pubDate)}
+        </time>
+        <span aria-hidden="true">·</span>
+        <span>约 {readingMinutes} 分钟阅读</span>
+      </div>
+    </header>
+
+    <div class="prose">
+      <Content />
+    </div>
+
+    {
+      (newer || older) && (
+        <nav class="article-nav" aria-label="相邻文章">
+          <div>
+            {newer && (
+              <a href={`/notes/${newer.id}/`}>← {newer.data.title}</a>
+            )}
+          </div>
+          <div>
+            {older && (
+              <a href={`/notes/${older.id}/`}>{older.data.title} →</a>
+            )}
+          </div>
+        </nav>
+      )
+    }
+  </article>
+</BaseLayout>

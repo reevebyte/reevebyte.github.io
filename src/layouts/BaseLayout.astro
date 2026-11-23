@@ -1,0 +1,201 @@
+---
+import { ClientRouter } from "astro:transitions";
+import "@fontsource-variable/inter";
+import "@fontsource-variable/space-grotesk";
+import "@fontsource/jetbrains-mono/400.css";
+import "@fontsource/jetbrains-mono/500.css";
+import "../styles/global.css";
+import InteractiveGrid from "../components/InteractiveGrid.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import { SITE } from "../data/site";
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const { title, description = SITE.description } = Astro.props;
+const pageTitle = title ? `${title} · ${SITE.title}` : `${SITE.title} — ${SITE.author}`;
+const canonicalURL = new URL(Astro.url.pathname, SITE.url);
+---
+
+<!doctype html>
+<html lang="zh-CN" data-theme="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <meta name="author" content={SITE.author} />
+    <meta name="theme-color" content="#f7f6f2" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#111110" media="(prefers-color-scheme: dark)" />
+    <link rel="canonical" href={canonicalURL} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title={`${SITE.title} 随笔`}
+      href="/rss.xml"
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalURL} />
+    <title>{pageTitle}</title>
+    <ClientRouter />
+    <script is:inline>
+      (() => {
+        const storageKey = "reevebyte-theme";
+        const resolveTheme = () => {
+          const saved = localStorage.getItem(storageKey);
+          return saved === "dark" ? "dark" : "light";
+        };
+        const applyTheme = (theme) => {
+          document.documentElement.dataset.theme = theme;
+        };
+        applyTheme(resolveTheme());
+        document.addEventListener("astro:after-swap", () => {
+          applyTheme(resolveTheme());
+        });
+      })();
+    </script>
+  </head>
+  <body>
+    <div class="scroll-rail" aria-hidden="true"></div>
+    <InteractiveGrid />
+    <Header />
+    <main class="site-main">
+      <div class="shell">
+        <slot />
+      </div>
+    </main>
+    <Footer />
+
+    <script>
+      const STORAGE_KEY = "reevebyte-theme";
+
+      function updateScrollProgress() {
+        const max = document.documentElement.scrollHeight - window.innerHeight;
+        const progress = max > 0 ? Math.min(Math.max(window.scrollY / max, 0), 1) : 0;
+        document.documentElement.style.setProperty("--scroll-progress", String(progress));
+      }
+
+      const win = window as unknown as { __reeveGlobalListeners?: boolean };
+      if (!win.__reeveGlobalListeners) {
+        win.__reeveGlobalListeners = true;
+        window.addEventListener("scroll", updateScrollProgress, { passive: true });
+        window.addEventListener("resize", updateScrollProgress, { passive: true });
+      }
+
+      function initPageInteractions() {
+        updateScrollProgress();
+
+        const toggle = document.querySelector<HTMLButtonElement>("[data-theme-toggle]");
+        if (toggle && !toggle.dataset.bound) {
+          toggle.dataset.bound = "true";
+          toggle.addEventListener("click", () => {
+            const current =
+              document.documentElement.dataset.theme === "dark" ? "dark" : "light";
+            const next = current === "dark" ? "light" : "dark";
+            document.documentElement.dataset.theme = next;
+            localStorage.setItem(STORAGE_KEY, next);
+            toggle.setAttribute("aria-pressed", String(next === "dark"));
+            document.dispatchEvent(new CustomEvent("reeve:theme-change", { detail: next }));
+          });
+        }
+
+        document
+          .querySelectorAll<HTMLButtonElement>("[data-copy-email]")
+          .forEach((btn) => {
+            if (btn.dataset.bound) return;
+            btn.dataset.bound = "true";
+            const original = btn.textContent ?? "";
+            let timer: number | undefined;
+            btn.addEventListener("click", async () => {
+              const email = btn.dataset.copyEmail;
+              if (!email) return;
+              try {
+                await navigator.clipboard.writeText(email);
+                btn.textContent = "已复制邮箱";
+                btn.classList.add("is-copied");
+                window.clearTimeout(timer);
+                timer = window.setTimeout(() => {
+                  btn.textContent = original;
+                  btn.classList.remove("is-copied");
+                }, 1800);
+              } catch {
+                window.location.href = `mailto:${email}`;
+              }
+            });
+          });
+
+        document
+          .querySelectorAll<HTMLElement>(".spotlight-surface, .project-card")
+          .forEach((card) => {
+            if (card.dataset.spotlightBound) return;
+            card.dataset.spotlightBound = "true";
+            card.addEventListener(
+              "pointermove",
+              (e) => {
+                const rect = card.getBoundingClientRect();
+                card.style.setProperty("--mx", `${e.clientX - rect.left}px`);
+                card.style.setProperty("--my", `${e.clientY - rect.top}px`);
+              },
+              { passive: true }
+            );
+          });
+
+        const revealEls = document.querySelectorAll<HTMLElement>("[data-reveal]");
+        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+          revealEls.forEach((el) => {
+            el.dataset.reveal = "visible";
+          });
+        } else {
+          const io = new IntersectionObserver(
+            (entries) => {
+              entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                  (entry.target as HTMLElement).dataset.reveal = "visible";
+                  io.unobserve(entry.target);
+                }
+              });
+            },
+            { threshold: 0.08, rootMargin: "0px 0px -24px 0px" }
+          );
+          revealEls.forEach((el) => io.observe(el));
+        }
+
+        document.querySelectorAll<HTMLPreElement>(".prose pre.astro-code").forEach((pre) => {
+          if (pre.parentElement?.classList.contains("code-block-wrap")) return;
+          const wrap = document.createElement("div");
+          wrap.className = "code-block-wrap";
+          pre.parentNode?.insertBefore(wrap, pre);
+          wrap.appendChild(pre);
+
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "code-copy-btn";
+          btn.textContent = "复制";
+          let timer: number | undefined;
+          btn.addEventListener("click", async () => {
+            const text = pre.textContent ?? "";
+            try {
+              await navigator.clipboard.writeText(text);
+              btn.textContent = "已复制";
+              btn.classList.add("is-copied");
+              window.clearTimeout(timer);
+              timer = window.setTimeout(() => {
+                btn.textContent = "复制";
+                btn.classList.remove("is-copied");
+              }, 1600);
+            } catch {}
+          });
+          wrap.appendChild(btn);
+        });
+      }
+
+      initPageInteractions();
+      document.addEventListener("astro:page-load", initPageInteractions);
+    </script>
+  </body>
+</html>

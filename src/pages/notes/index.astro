@@ -1,0 +1,59 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { formatMonthDay } from "../../utils/format";
+
+const notes = (await getCollection("notes", ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+
+const groupedByYear = new Map<number, typeof notes>();
+for (const note of notes) {
+  const year = note.data.pubDate.getFullYear();
+  const list = groupedByYear.get(year) ?? [];
+  list.push(note);
+  groupedByYear.set(year, list);
+}
+const years = Array.from(groupedByYear.entries()).sort((a, b) => b[0] - a[0]);
+---
+
+<BaseLayout title="随笔" description="关于写代码、界面细节与日常工具折腾的记录。">
+  <section class="page-intro">
+    <h1 class="page-h1">
+      <span class="mask-line"><span>随笔</span></span>
+    </h1>
+    <p class="page-lead">
+      记录写代码、做小工具和折腾界面时的一些想法。也支持通过{" "}
+      <a class="text-link" href="/rss.xml">RSS</a> 订阅。
+    </p>
+  </section>
+
+  {
+    years.map(([year, items]) => (
+      <section class="year-row" data-reveal aria-label={`${year} 年随笔`}>
+        <h2 class="year-heading">{year}</h2>
+        <ul class="note-list">
+          {items.map((note) => (
+            <li class="note-item">
+              <a class="note-link" href={`/notes/${note.id}/`}>
+                <div>
+                  <p class="note-title">
+                    <span>{note.data.title}</span>
+                    <span class="note-arrow" aria-hidden="true">→</span>
+                  </p>
+                  <p class="note-desc">{note.data.description}</p>
+                </div>
+                <time
+                  class="note-date"
+                  datetime={note.data.pubDate.toISOString()}
+                >
+                  {formatMonthDay(note.data.pubDate)}
+                </time>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))
+  }
+</BaseLayout>

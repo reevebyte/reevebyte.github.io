@@ -1,0 +1,33 @@
+---
+import { SITE } from "../data/site";
+
+const pathname = Astro.url.pathname;
+const isProjects = pathname.startsWith("/projects");
+const isNotes = pathname.startsWith("/notes");
+---
+
+<header class="site-header">
+  <div class="shell header-inner">
+    <a class="brand-wordmark" href="/" aria-label={`${SITE.title} 首页`}>
+      <span>{SITE.title}</span><span class="brand-dot" aria-hidden="true">.</span>
+    </a>
+
+    <div class="header-right">
+      <nav class="site-nav" aria-label="主导航">
+        <a href="/projects/" class:list={{ "is-active": isProjects }}>作品</a>
+        <a href="/notes/" class:list={{ "is-active": isNotes }}>随笔</a>
+      </nav>
+
+      <button
+        type="button"
+        class="theme-switch"
+        data-theme-toggle
+        aria-label="切换浅色与深色模式"
+        aria-pressed="false"
+        title="切换浅色 / 深色模式"
+      >
+        <span class="theme-thumb" aria-hidden="true"></span>
+      </button>
+    </div>
+  </div>
+</header>

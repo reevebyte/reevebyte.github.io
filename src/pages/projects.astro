@@ -1,0 +1,62 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { PROJECTS } from "../data/projects";
+---
+
+<BaseLayout title="作品" description="ReeveByte 正在维护和开源的真实项目清单。">
+  <section class="page-intro">
+    <h1 class="page-h1">
+      <span class="mask-line"><span>作品</span></span>
+    </h1>
+    <p class="page-lead">
+      这里只放真实存在、能直接跑起来的项目——大多源于日常工作里实在忍不了的小麻烦。
+    </p>
+  </section>
+
+  <div class="project-grid">
+    {
+      PROJECTS.map((project) => (
+        <article class="project-card" data-reveal>
+          <div>
+            <div class="project-card-head">
+              <h2 class="project-card-title">
+                <a href={project.repoUrl} target="_blank" rel="noreferrer">
+                  {project.name}
+                </a>
+              </h2>
+              <span class="project-card-year">{project.year}</span>
+            </div>
+
+            <p class="project-card-summary">{project.summary}</p>
+            <p class="project-card-detail">{project.detail}</p>
+          </div>
+
+          <div>
+            <p class="project-card-meta">{project.stack.join(" · ")}</p>
+
+            <div class="action-row" style="margin-top: 0;">
+              <a
+                class="btn btn-primary"
+                href={project.repoUrl}
+                target="_blank"
+                rel="noreferrer"
+              >
+                查看源码 ↗
+              </a>
+              {project.demoUrl && (
+                <a
+                  class="text-link"
+                  href={project.demoUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  在线访问 ↗
+                </a>
+              )}
+            </div>
+          </div>
+        </article>
+      ))
+    }
+  </div>
+</BaseLayout>

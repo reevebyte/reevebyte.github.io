@@ -1,0 +1,236 @@
+---
+import { PROJECTS } from "../data/projects";
+
+const mainProject = PROJECTS[0];
+---
+
+<section class="band" data-reveal aria-labelledby="work-heading">
+  <div class="band-head">
+    <h2 id="work-heading" class="band-title">作品</h2>
+    <a class="text-link" href="/projects/">全部作品 →</a>
+  </div>
+
+  <div class="showcase-grid">
+    <div>
+      <h3 class="showcase-name">{mainProject.name}</h3>
+      <p class="showcase-desc">{mainProject.detail}</p>
+
+      <ul class="feature-points">
+        <li>支持 Windows 与 macOS，框选即翻</li>
+        <li>本地与云端 OCR 引擎自由切换</li>
+        <li>接入 OpenAI 兼容接口与常规翻译服务</li>
+      </ul>
+
+      <div class="action-row" style="margin-top: 1.75rem;">
+        <a
+          class="btn btn-primary"
+          href={mainProject.repoUrl}
+          target="_blank"
+          rel="noreferrer"
+        >
+          查看源码 ↗
+        </a>
+      </div>
+    </div>
+
+    <div class="demo-window spotlight-surface" data-ocr-demo>
+      <div class="demo-bar">
+        <div class="demo-lights" aria-hidden="true">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+
+        <div class="demo-actions">
+          <div class="lang-toggle" role="tablist" aria-label="切换演示语言">
+            <button
+              type="button"
+              class="lang-btn is-active"
+              data-lang-btn="en"
+              role="tab"
+              aria-selected="true"
+            >
+              英文
+            </button>
+            <button
+              type="button"
+              class="lang-btn"
+              data-lang-btn="ja"
+              role="tab"
+              aria-selected="false"
+            >
+              日文
+            </button>
+          </div>
+
+          <button type="button" class="scan-btn" data-scan-trigger>
+            框选翻译
+          </button>
+        </div>
+      </div>
+
+      <div class="demo-canvas">
+        <button
+          type="button"
+          class="ocr-block"
+          data-ocr-target="0"
+          aria-label="点击体验第一段文字翻译"
+        >
+          <span class="ocr-corner tl" aria-hidden="true"></span>
+          <span class="ocr-corner tr" aria-hidden="true"></span>
+          <span class="ocr-corner bl" aria-hidden="true"></span>
+          <span class="ocr-corner br" aria-hidden="true"></span>
+          <span class="ocr-beam" aria-hidden="true"></span>
+
+          <p class="ocr-text" data-source-text>
+            Select any region on your screen to capture text with local OCR and render translated overlays right in place.
+          </p>
+
+          <div class="ocr-result" aria-live="polite" data-translated-text>
+            框选屏幕任意区域即可通过本地 OCR 识别文字，并在原位直接渲染悬浮译文。
+          </div>
+        </button>
+
+        <button
+          type="button"
+          class="ocr-block"
+          data-ocr-target="1"
+          aria-label="点击体验第二段文字翻译"
+        >
+          <span class="ocr-corner tl" aria-hidden="true"></span>
+          <span class="ocr-corner tr" aria-hidden="true"></span>
+          <span class="ocr-corner bl" aria-hidden="true"></span>
+          <span class="ocr-corner br" aria-hidden="true"></span>
+          <span class="ocr-beam" aria-hidden="true"></span>
+
+          <p class="ocr-text" data-source-text>
+            Switch seamlessly between offline recognition, OpenAI-compatible models, and side-by-side reading mode.
+          </p>
+
+          <div class="ocr-result" aria-live="polite" data-translated-text>
+            在离线识别、OpenAI 兼容大模型与对照阅读视图之间无缝切换。
+          </div>
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  const PRESETS = {
+    en: [
+      {
+        source:
+          "Select any region on your screen to capture text with local OCR and render translated overlays right in place.",
+        translated:
+          "框选屏幕任意区域即可通过本地 OCR 识别文字，并在原位直接渲染悬浮译文。",
+      },
+      {
+        source:
+          "Switch seamlessly between offline recognition, OpenAI-compatible models, and side-by-side reading mode.",
+        translated:
+          "在离线识别、OpenAI 兼容大模型与对照阅读视图之间无缝切换。",
+      },
+    ],
+    ja: [
+      {
+        source:
+          "画面上の任意のエリアをドラッグして選択すると、文字を自動認識して翻訳結果をそのまま重ねて表示します。",
+        translated:
+          "拖拽框选屏幕任意区域，程序会自动识别文字并将翻译结果直接叠加显示在原处。",
+      },
+      {
+        source:
+          "グローバルショートカットに対応し、作業中のウィンドウを離れずに素早く翻訳できます。",
+        translated:
+          "支持全局快捷键，无需离开当前工作窗口即可快速完成翻译。",
+      },
+    ],
+  } as const;
+
+  function initOcrDemo() {
+    const root = document.querySelector<HTMLElement>("[data-ocr-demo]");
+    if (!root || root.dataset.bound) return;
+    root.dataset.bound = "true";
+
+    let activeIdx = 0;
+    let scanTimer: number | undefined;
+
+    const langBtns = root.querySelectorAll<HTMLButtonElement>("[data-lang-btn]");
+    const targets = root.querySelectorAll<HTMLButtonElement>("[data-ocr-target]");
+    const triggerBtn = root.querySelector<HTMLButtonElement>("[data-scan-trigger]");
+
+    function renderPreset(lang: "en" | "ja") {
+      const items = PRESETS[lang];
+      targets.forEach((target, idx) => {
+        const item = items[idx];
+        const src = target.querySelector("[data-source-text]");
+        const tr = target.querySelector("[data-translated-text]");
+        if (src) src.textContent = item.source;
+        if (tr) tr.textContent = item.translated;
+      });
+
+      langBtns.forEach((btn) => {
+        const isCurrent = btn.dataset.langBtn === lang;
+        btn.classList.toggle("is-active", isCurrent);
+        btn.setAttribute("aria-selected", String(isCurrent));
+      });
+    }
+
+    function runScan(idx: number) {
+      activeIdx = idx;
+      window.clearTimeout(scanTimer);
+
+      targets.forEach((t) => {
+        t.classList.remove("is-selected", "is-scanning", "is-translated");
+      });
+
+      const target = targets[idx];
+      if (!target) return;
+
+      target.classList.add("is-selected");
+      void target.offsetWidth;
+      target.classList.add("is-scanning");
+
+      const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      scanTimer = window.setTimeout(
+        () => {
+          target.classList.remove("is-scanning");
+          target.classList.add("is-translated");
+        },
+        reduced ? 40 : 420
+      );
+    }
+
+    langBtns.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const lang = btn.dataset.langBtn === "ja" ? "ja" : "en";
+        renderPreset(lang);
+        runScan(activeIdx);
+      });
+    });
+
+    targets.forEach((target, idx) => {
+      target.addEventListener("click", () => runScan(idx));
+    });
+
+    triggerBtn?.addEventListener("click", () => {
+      const next = (activeIdx + 1) % targets.length;
+      runScan(next);
+    });
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          observer.disconnect();
+          window.setTimeout(() => runScan(0), 450);
+        }
+      },
+      { threshold: 0.3 }
+    );
+    observer.observe(root);
+  }
+
+  initOcrDemo();
+  document.addEventListener("astro:page-load", initOcrDemo);
+</script>
