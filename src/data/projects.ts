@@ -8,6 +8,11 @@ export interface Project {
   repoUrl: string;
   demoUrl?: string;
   featured?: boolean;
+  image: string;
+  imageAlt: string;
+  artTitle: string;
+  artArtist: string;
+  artYear: string;
 }
 
 export const PROJECTS: Project[] = [
@@ -21,17 +26,27 @@ export const PROJECTS: Project[] = [
     stack: ["Windows", "macOS", "OCR", "OpenAI API"],
     repoUrl: "https://github.com/reevebyte/ScreenTranslate",
     featured: true,
+    image: "/art/project-screentranslate.jpg",
+    imageAlt: "勃鲁盖尔与鲁本斯 1617 年《视觉的寓言》，普拉多博物馆馆藏",
+    artTitle: "The Sense of Sight",
+    artArtist: "Brueghel & Rubens",
+    artYear: "1617",
   },
   {
     name: "reevebyte.github.io",
-    summary: "你正在看的个人主页。采用瑞士工业平面网格与微交互重构，零框架负担。",
+    summary: "你正在看的个人主页，用 Astro 5 做的静态站点。",
     detail:
-      "基于 Astro 5 构建：内嵌可交互 ScreenTranslate 划词演示、Canvas 鼠标磁吸点阵背景、实时机械时钟仪表、Content Collections 随笔系统与 RSS 订阅源。",
+      "基于 Astro 5 构建，使用公版博物馆油画与铜版画素材，包含滚动联动星盘、ScreenTranslate 交互演示、⌘K 快捷面板以及基于 Markdown 的随笔与 RSS 订阅。",
     year: "2026",
     status: "开源",
-    stack: ["Astro 5", "TypeScript", "Canvas", "GitHub Actions"],
+    stack: ["Astro 5", "TypeScript", "CSS", "GitHub Actions"],
     repoUrl: "https://github.com/reevebyte/reevebyte.github.io",
     demoUrl: "https://reevebyte.github.io",
     featured: true,
+    image: "/art/project-homepage.jpg",
+    imageAlt: "帕尼尼 1757 年《现代罗马画廊》，大都会艺术博物馆馆藏",
+    artTitle: "Modern Rome",
+    artArtist: "Giovanni Paolo Panini",
+    artYear: "1757",
   },
 ];

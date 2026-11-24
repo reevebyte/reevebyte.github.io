@@ -1,0 +1,64 @@
+---
+import { getCollection } from "astro:content";
+import { SITE } from "../data/site";
+import { PROJECTS } from "../data/projects";
+
+const notes = await getCollection("notes", ({ data }) => !data.draft);
+
+const commands = [
+  { label: "首页 · Home", tag: "PAGE", action: "href", target: "/" },
+  { label: "作品清单 · Projects", tag: "PAGE", action: "href", target: "/projects/" },
+  { label: "随笔归档 · Notes", tag: "PAGE", action: "href", target: "/notes/" },
+  {
+    label: "体验 ScreenTranslate 实时演示",
+    tag: "DEMO",
+    action: "href",
+    target: "/projects/#screentranslate",
+  },
+  ...PROJECTS.map((p) => ({
+    label: `${p.name} · GitHub 源码`,
+    tag: "REPO",
+    action: "external",
+    target: p.repoUrl,
+  })),
+  ...notes.map((n) => ({
+    label: n.data.title,
+    tag: "NOTE",
+    action: "href",
+    target: `/notes/${n.id}/`,
+  })),
+  {
+    label: `复制邮箱 · ${SITE.email}`,
+    tag: "COPY",
+    action: "copy",
+    target: SITE.email,
+  },
+  {
+    label: "RSS 订阅源",
+    tag: "FEED",
+    action: "href",
+    target: "/rss.xml",
+  },
+];
+---
+
+<div class="cmd-backdrop" data-cmd-backdrop aria-hidden="true">
+  <div class="cmd-dialog" role="dialog" aria-modal="true" aria-label="快捷命令面板">
+    <div class="cmd-input-row">
+      <input
+        type="search"
+        class="cmd-input"
+        data-cmd-input
+        placeholder="输入页面、作品或操作关键词…"
+        autocomplete="off"
+      />
+      <button type="button" class="cmd-esc" data-cmd-close>ESC</button>
+    </div>
+
+    <ul class="cmd-list" data-cmd-list></ul>
+  </div>
+</div>
+
+<script is:inline define:vars={{ commands }}>
+  window.__REEVE_COMMANDS__ = commands;
+</script>

@@ -4,19 +4,38 @@ import { SITE } from "../data/site";
 const year = new Date().getFullYear();
 ---
 
-<footer class="site-footer" id="contact">
-  <div class="shell footer-inner">
-    <span>© {year} {SITE.author}</span>
-    <div class="footer-links">
-      <button
-        type="button"
-        data-copy-email={SITE.email}
-        title="点击复制邮箱地址"
-      >
-        {SITE.email}
-      </button>
-      <a href={SITE.github} target="_blank" rel="noreferrer">GitHub ↗</a>
-      <a href="/rss.xml">RSS</a>
+<footer class="atelier-footer" id="contact" data-atelier-footer>
+  <div class="footer-statue-bg" aria-hidden="true">
+    <img src="/art/museum-footer-raw.jpg" alt="" loading="lazy" />
+  </div>
+
+  <div class="container footer-content">
+    <div class="footer-giant-mask" aria-hidden="true">
+      <div class="footer-giant-word" data-footer-word>ReeveByte</div>
+    </div>
+
+    <div class="footer-bar">
+      <nav class="footer-links" aria-label="页脚导航">
+        <a href="/projects/">作品</a>
+        <a href="/notes/">随笔</a>
+        <a
+          href="https://github.com/reevebyte/ScreenTranslate"
+          target="_blank"
+          rel="noreferrer"
+        >
+          ScreenTranslate
+        </a>
+        <a href={SITE.github} target="_blank" rel="noreferrer" data-cursor="OPEN">
+          GitHub ↗
+        </a>
+        <button type="button" data-copy-email={SITE.email} data-cursor="COPY">
+          {SITE.email}
+        </button>
+      </nav>
+
+      <span class="footer-copy">© {year} {SITE.author}</span>
     </div>
   </div>
 </footer>
+
+<div class="atelier-toast" data-atelier-toast role="status" aria-live="polite"></div>

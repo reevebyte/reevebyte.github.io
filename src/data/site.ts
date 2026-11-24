@@ -6,12 +6,12 @@ export const SITE = {
   email: "reebyte@gmail.com",
   github: "https://github.com/reevebyte",
   description:
-    "Reeve Reed 的个人主页。做趁手的小工具，写干净的界面，偶尔记点随笔。",
-  tagline: "做趁手的小工具，顺手把界面收拾干净。",
-  bio: "平时写桌面应用、前端界面和自动化脚本，大多项目都源于日常实在忍不了的小麻烦。比起宏大叙事，更喜欢那些打开就能用、过半年再看也不觉得尴尬的东西。",
+    "Reeve Reed 的个人站点。主要写桌面工具、前端与自用脚本，目前在维护 ScreenTranslate。",
+  tagline: "Reeve Reed 的个人站点。",
+  bio: "主要写桌面工具、前端界面和一些自用脚本，目前持续维护跨平台截图翻译工具 ScreenTranslate。",
   now: [
-    "继续维护 ScreenTranslate，把本地识别速度、多引擎切换和交互细节再打磨顺手一些。",
-    "把平时散落在本地的实用脚本和笔记慢慢整理出来，放到随笔栏里。",
+    "持续迭代 ScreenTranslate，重点优化本地 OCR 识别效率与多引擎切换体验。",
+    "把平时写下来的实用脚本与技术笔记陆续整理归档到随笔栏。",
   ],
   toolbox: [
     "TypeScript",

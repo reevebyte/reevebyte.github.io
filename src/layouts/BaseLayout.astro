@@ -1,13 +1,18 @@
 ---
 import { ClientRouter } from "astro:transitions";
 import "@fontsource-variable/inter";
-import "@fontsource-variable/space-grotesk";
+import "@fontsource/cormorant-garamond/300.css";
+import "@fontsource/cormorant-garamond/300-italic.css";
+import "@fontsource/cormorant-garamond/400.css";
+import "@fontsource/cormorant-garamond/400-italic.css";
+import "@fontsource/cormorant-garamond/500.css";
+import "@fontsource/cormorant-garamond/500-italic.css";
 import "@fontsource/jetbrains-mono/400.css";
 import "@fontsource/jetbrains-mono/500.css";
 import "../styles/global.css";
-import InteractiveGrid from "../components/InteractiveGrid.astro";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
+import CommandPalette from "../components/CommandPalette.astro";
 import { SITE } from "../data/site";
 
 interface Props {
@@ -21,14 +26,13 @@ const canonicalURL = new URL(Astro.url.pathname, SITE.url);
 ---
 
 <!doctype html>
-<html lang="zh-CN" data-theme="light">
+<html lang="zh-CN">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
     <meta name="author" content={SITE.author} />
-    <meta name="theme-color" content="#f7f6f2" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#111110" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#98111b" />
     <link rel="canonical" href={canonicalURL} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link
@@ -43,128 +47,411 @@ const canonicalURL = new URL(Astro.url.pathname, SITE.url);
     <meta property="og:url" content={canonicalURL} />
     <title>{pageTitle}</title>
     <ClientRouter />
-    <script is:inline>
-      (() => {
-        const storageKey = "reevebyte-theme";
-        const resolveTheme = () => {
-          const saved = localStorage.getItem(storageKey);
-          return saved === "dark" ? "dark" : "light";
-        };
-        const applyTheme = (theme) => {
-          document.documentElement.dataset.theme = theme;
-        };
-        applyTheme(resolveTheme());
-        document.addEventListener("astro:after-swap", () => {
-          applyTheme(resolveTheme());
-        });
-      })();
-    </script>
   </head>
   <body>
-    <div class="scroll-rail" aria-hidden="true"></div>
-    <InteractiveGrid />
+    <div class="scroll-bar" aria-hidden="true"></div>
+    <div class="cursor-halo" data-cursor-halo aria-hidden="true"></div>
     <Header />
     <main class="site-main">
-      <div class="shell">
-        <slot />
-      </div>
+      <slot />
     </main>
     <Footer />
+    <CommandPalette />
 
     <script>
-      const STORAGE_KEY = "reevebyte-theme";
-
-      function updateScrollProgress() {
-        const max = document.documentElement.scrollHeight - window.innerHeight;
-        const progress = max > 0 ? Math.min(Math.max(window.scrollY / max, 0), 1) : 0;
-        document.documentElement.style.setProperty("--scroll-progress", String(progress));
+      interface CmdItem {
+        label: string;
+        tag: string;
+        action: "href" | "external" | "copy";
+        target: string;
       }
 
-      const win = window as unknown as { __reeveGlobalListeners?: boolean };
-      if (!win.__reeveGlobalListeners) {
-        win.__reeveGlobalListeners = true;
-        window.addEventListener("scroll", updateScrollProgress, { passive: true });
-        window.addEventListener("resize", updateScrollProgress, { passive: true });
+      let toastTimer: number | undefined;
+      function showToast(msg: string) {
+        const toast = document.querySelector<HTMLElement>("[data-atelier-toast]");
+        if (!toast) return;
+        toast.textContent = msg;
+        toast.classList.add("is-visible");
+        window.clearTimeout(toastTimer);
+        toastTimer = window.setTimeout(() => {
+          toast.classList.remove("is-visible");
+        }, 2100);
       }
 
-      function initPageInteractions() {
-        updateScrollProgress();
+      function closeCommandPalette() {
+        const backdrop = document.querySelector<HTMLElement>("[data-cmd-backdrop]");
+        backdrop?.classList.remove("is-open");
+        backdrop?.setAttribute("aria-hidden", "true");
+      }
 
-        const toggle = document.querySelector<HTMLButtonElement>("[data-theme-toggle]");
-        if (toggle && !toggle.dataset.bound) {
-          toggle.dataset.bound = "true";
-          toggle.addEventListener("click", () => {
-            const current =
-              document.documentElement.dataset.theme === "dark" ? "dark" : "light";
-            const next = current === "dark" ? "light" : "dark";
-            document.documentElement.dataset.theme = next;
-            localStorage.setItem(STORAGE_KEY, next);
-            toggle.setAttribute("aria-pressed", String(next === "dark"));
-            document.dispatchEvent(new CustomEvent("reeve:theme-change", { detail: next }));
+      function renderCommands(query: string) {
+        const list = document.querySelector<HTMLUListElement>("[data-cmd-list]");
+        const all =
+          (window as unknown as { __REEVE_COMMANDS__?: CmdItem[] })
+            .__REEVE_COMMANDS__ ?? [];
+        if (!list) return;
+        const q = query.trim().toLowerCase();
+        const filtered = q
+          ? all.filter(
+              (c) =>
+                c.label.toLowerCase().includes(q) || c.tag.toLowerCase().includes(q)
+            )
+          : all;
+
+        list.innerHTML = "";
+        filtered.forEach((item) => {
+          const li = document.createElement("li");
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "cmd-item-btn";
+          btn.innerHTML = `<span>${item.label}</span><span class="cmd-item-tag">${item.tag}</span>`;
+          btn.addEventListener("click", async () => {
+            closeCommandPalette();
+            if (item.action === "copy") {
+              try {
+                await navigator.clipboard.writeText(item.target);
+                showToast(`COPIED · ${item.target}`);
+              } catch {}
+            } else if (item.action === "external") {
+              window.open(item.target, "_blank", "noopener,noreferrer");
+            } else {
+              window.location.href = item.target;
+            }
+          });
+          li.appendChild(btn);
+          list.appendChild(li);
+        });
+      }
+
+      function openCommandPalette() {
+        const backdrop = document.querySelector<HTMLElement>("[data-cmd-backdrop]");
+        const input = document.querySelector<HTMLInputElement>("[data-cmd-input]");
+        if (!backdrop) return;
+        backdrop.classList.add("is-open");
+        backdrop.setAttribute("aria-hidden", "false");
+        if (input) input.value = "";
+        renderCommands("");
+        window.setTimeout(() => input?.focus(), 60);
+      }
+
+      /* =========================================================
+         UNIFIED 60FPS DAMPED SCROLL + POINTER CHOREOGRAPHY ENGINE
+         Connects Hero Astrolabe, Header Star Emblem, Differential
+         Column Parallax, Footer Winged Victory & Cursor Halo.
+         ========================================================= */
+      const motionState = {
+        smoothY: 0,
+        idleAngle: 0,
+        mx: -200,
+        my: -200,
+        cx: -200,
+        cy: -200,
+        pointerVisible: false,
+        rafId: 0,
+      };
+
+      function startUnifiedChoreography() {
+        window.cancelAnimationFrame(motionState.rafId);
+        const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        const finePointer = !window.matchMedia("(pointer: coarse)").matches;
+        motionState.smoothY = window.scrollY;
+
+        const header = document.querySelector<HTMLElement>("[data-site-header]");
+        const paper = document.querySelector<HTMLElement>("[data-paper-zone]");
+        const astrolabeStage = document.querySelector<HTMLElement>("[data-astrolabe]");
+        const astrolabeWheel = document.querySelector<HTMLElement>("[data-astrolabe-wheel]");
+        const astrolabeOuter = document.querySelector<HTMLElement>("[data-astrolabe-outer]");
+        const heroCopy = document.querySelector<HTMLElement>("[data-hero-copy]");
+        const colParallaxes = Array.from(
+          document.querySelectorAll<HTMLElement>("[data-col-parallax]")
+        );
+        const footer = document.querySelector<HTMLElement>("[data-atelier-footer]");
+        const halo = document.querySelector<HTMLElement>("[data-cursor-halo]");
+
+        const frame = () => {
+          const targetY = window.scrollY;
+          motionState.smoothY += (targetY - motionState.smoothY) * (reduced ? 1 : 0.12);
+          const sy = motionState.smoothY;
+          const maxScroll = Math.max(
+            1,
+            document.documentElement.scrollHeight - window.innerHeight
+          );
+          const progress = Math.min(Math.max(sy / maxScroll, 0), 1);
+
+          // 1. Scroll progress bar & synchronized Header Star rotation (0 -> 360deg)
+          document.documentElement.style.setProperty("--scroll-progress", progress.toFixed(4));
+          document.documentElement.style.setProperty(
+            "--star-rot",
+            `${(progress * 360).toFixed(1)}deg`
+          );
+
+          // 2. Adaptive Crimson <-> Paper header flip
+          if (header && paper) {
+            const rect = paper.getBoundingClientRect();
+            const overPaper = rect.top <= 72 && rect.bottom > 72;
+            header.classList.toggle("is-paper", overPaper);
+            document.body.classList.toggle("on-paper", overPaper);
+          }
+
+          if (!reduced) {
+            // 3. Scroll-coupled Dürer Celestial Astrolabe (idle drift + scroll spin + subtle depth recession)
+            motionState.idleAngle += 0.04;
+            const wheelDeg = motionState.idleAngle + sy * 0.09;
+            if (astrolabeWheel) {
+              astrolabeWheel.style.transform = `rotate(${wheelDeg.toFixed(2)}deg)`;
+            }
+            if (astrolabeOuter) {
+              astrolabeOuter.style.transform = `rotate(${(-wheelDeg * 0.55).toFixed(2)}deg)`;
+            }
+            if (window.innerWidth > 980) {
+              const heroFade = Math.min(sy / 750, 1);
+              if (astrolabeStage) {
+                astrolabeStage.style.transform = `translate3d(0, ${(heroFade * 32).toFixed(1)}px, 0) scale(${(1 - heroFade * 0.05).toFixed(4)})`;
+              }
+              if (heroCopy) {
+                heroCopy.style.transform = `translate3d(0, ${(heroFade * -18).toFixed(1)}px, 0)`;
+              }
+
+              // 4. Differential vertical parallax across the 3 museum columns
+              const vh = window.innerHeight;
+              for (const col of colParallaxes) {
+                const amp = Number(col.dataset.colParallax || "0");
+                const r = col.getBoundingClientRect();
+                const norm = Math.max(-1, Math.min(1, (r.top + r.height / 2 - vh / 2) / vh));
+                col.style.transform = `translate3d(0, ${(norm * amp).toFixed(1)}px, 0)`;
+              }
+            }
+
+            // 5. Monumental Winged Victory Footer scroll-linked scale & wordmark rise
+            if (footer) {
+              const r = footer.getBoundingClientRect();
+              const travel = Math.max(1, Math.min(r.height * 0.9, window.innerHeight * 0.82));
+              const ratio = Math.min(Math.max((window.innerHeight - r.top) / travel, 0), 1);
+              const scale = 1.09 - ratio * 0.09;
+              const imgY = (1 - ratio) * -26;
+              const wordY = (1 - ratio) * 42;
+              const wordAlpha = 0.08 + ratio * 0.16;
+              footer.style.setProperty("--footer-scale", scale.toFixed(4));
+              footer.style.setProperty("--footer-y", `${imgY.toFixed(1)}px`);
+              footer.style.setProperty("--footer-word-y", `${wordY.toFixed(1)}px`);
+              footer.style.setProperty("--footer-word-alpha", wordAlpha.toFixed(3));
+            }
+
+            // 6. Damped architectural cursor halo
+            if (halo && finePointer && motionState.pointerVisible) {
+              motionState.cx += (motionState.mx - motionState.cx) * 0.16;
+              motionState.cy += (motionState.my - motionState.cy) * 0.16;
+              halo.style.transform = `translate3d(${motionState.cx.toFixed(1)}px, ${motionState.cy.toFixed(1)}px, 0)`;
+            }
+          }
+
+          motionState.rafId = window.requestAnimationFrame(frame);
+        };
+
+        motionState.rafId = window.requestAnimationFrame(frame);
+      }
+
+      const win = window as unknown as { __reeveV8Global?: boolean };
+      if (!win.__reeveV8Global) {
+        win.__reeveV8Global = true;
+        document.addEventListener("nous:toast", (e) => {
+          const detail = (e as CustomEvent<string>).detail;
+          if (detail) showToast(detail);
+        });
+        window.addEventListener("keydown", (e) => {
+          if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+            e.preventDefault();
+            const backdrop = document.querySelector<HTMLElement>("[data-cmd-backdrop]");
+            if (backdrop?.classList.contains("is-open")) closeCommandPalette();
+            else openCommandPalette();
+          } else if (e.key === "Escape") {
+            closeCommandPalette();
+          }
+        });
+        window.addEventListener(
+          "pointermove",
+          (e) => {
+            motionState.mx = e.clientX;
+            motionState.my = e.clientY;
+            if (!motionState.pointerVisible) {
+              motionState.cx = e.clientX;
+              motionState.cy = e.clientY;
+              motionState.pointerVisible = true;
+              document
+                .querySelector<HTMLElement>("[data-cursor-halo]")
+                ?.classList.add("is-visible");
+            }
+          },
+          { passive: true }
+        );
+        window.addEventListener("pointerleave", () => {
+          motionState.pointerVisible = false;
+          document
+            .querySelector<HTMLElement>("[data-cursor-halo]")
+            ?.classList.remove("is-visible");
+        });
+      }
+
+      function initPage() {
+        closeCommandPalette();
+        startUnifiedChoreography();
+
+        const finePointer =
+          !window.matchMedia("(pointer: coarse)").matches &&
+          !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        const halo = document.querySelector<HTMLElement>("[data-cursor-halo]");
+
+        if (finePointer) {
+          // Contextual cursor halo labels
+          document.querySelectorAll<HTMLElement>("[data-cursor]").forEach((el) => {
+            if (el.dataset.cursorBound) return;
+            el.dataset.cursorBound = "true";
+            el.addEventListener("pointerenter", () => {
+              if (!halo) return;
+              halo.textContent = el.dataset.cursor || "";
+              halo.classList.add("is-labeled");
+            });
+            el.addEventListener("pointerleave", () => {
+              if (!halo) return;
+              halo.textContent = "";
+              halo.classList.remove("is-labeled");
+            });
+          });
+
+          // Astrolabe 3D Tilt
+          const astrolabe = document.querySelector<HTMLElement>("[data-astrolabe]");
+          const astrolabeTilt = document.querySelector<HTMLElement>("[data-astrolabe-tilt]");
+          if (astrolabe && astrolabeTilt && !astrolabe.dataset.bound) {
+            astrolabe.dataset.bound = "true";
+            astrolabe.addEventListener(
+              "pointermove",
+              (e) => {
+                const r = astrolabe.getBoundingClientRect();
+                const nx = (e.clientX - r.left) / r.width - 0.5;
+                const ny = (e.clientY - r.top) / r.height - 0.5;
+                astrolabeTilt.style.transform = `rotateY(${(nx * 14).toFixed(1)}deg) rotateX(${(-ny * 14).toFixed(1)}deg)`;
+              },
+              { passive: true }
+            );
+            astrolabe.addEventListener("pointerleave", () => {
+              astrolabeTilt.style.transform = "rotateY(0deg) rotateX(0deg)";
+            });
+          }
+
+          // 3D Perspective Tilt + Specular Glint on Museum Masterpiece Plates
+          document.querySelectorAll<HTMLElement>("[data-tilt-card]").forEach((card) => {
+            if (card.dataset.tiltBound) return;
+            card.dataset.tiltBound = "true";
+            card.addEventListener(
+              "pointermove",
+              (e) => {
+                const r = card.getBoundingClientRect();
+                const px = e.clientX - r.left;
+                const py = e.clientY - r.top;
+                const nx = px / r.width - 0.5;
+                const ny = py / r.height - 0.5;
+                card.style.setProperty("--gx", `${px}px`);
+                card.style.setProperty("--gy", `${py}px`);
+                card.style.transform = `rotateY(${(nx * 9).toFixed(1)}deg) rotateX(${(-ny * 9).toFixed(1)}deg) translateY(-4px)`;
+              },
+              { passive: true }
+            );
+            card.addEventListener("pointerleave", () => {
+              card.style.transform = "rotateY(0deg) rotateX(0deg) translateY(0)";
+            });
+          });
+
+          // Magnetic cursor pull on buttons
+          document.querySelectorAll<HTMLElement>("[data-magnetic]").forEach((btn) => {
+            if (btn.dataset.magBound) return;
+            btn.dataset.magBound = "true";
+            btn.addEventListener(
+              "pointermove",
+              (e) => {
+                const r = btn.getBoundingClientRect();
+                const dx = (e.clientX - (r.left + r.width / 2)) * 0.16;
+                const dy = (e.clientY - (r.top + r.height / 2)) * 0.22;
+                btn.style.transform = `translate3d(${dx.toFixed(1)}px, ${dy.toFixed(1)}px, 0)`;
+              },
+              { passive: true }
+            );
+            btn.addEventListener("pointerleave", () => {
+              btn.style.transform = "translate3d(0, 0, 0)";
+            });
           });
         }
 
+        // Command Palette triggers
+        const cmdOpen = document.querySelector<HTMLButtonElement>("[data-cmd-open]");
+        if (cmdOpen && !cmdOpen.dataset.bound) {
+          cmdOpen.dataset.bound = "true";
+          cmdOpen.addEventListener("click", openCommandPalette);
+        }
+        const cmdClose = document.querySelector<HTMLButtonElement>("[data-cmd-close]");
+        if (cmdClose && !cmdClose.dataset.bound) {
+          cmdClose.dataset.bound = "true";
+          cmdClose.addEventListener("click", closeCommandPalette);
+        }
+        const cmdBackdrop = document.querySelector<HTMLElement>("[data-cmd-backdrop]");
+        if (cmdBackdrop && !cmdBackdrop.dataset.bound) {
+          cmdBackdrop.dataset.bound = "true";
+          cmdBackdrop.addEventListener("click", (e) => {
+            if (e.target === cmdBackdrop) closeCommandPalette();
+          });
+        }
+        const cmdInput = document.querySelector<HTMLInputElement>("[data-cmd-input]");
+        if (cmdInput && !cmdInput.dataset.bound) {
+          cmdInput.dataset.bound = "true";
+          cmdInput.addEventListener("input", () => renderCommands(cmdInput.value));
+        }
+
+        // Email copy buttons
         document
           .querySelectorAll<HTMLButtonElement>("[data-copy-email]")
           .forEach((btn) => {
             if (btn.dataset.bound) return;
             btn.dataset.bound = "true";
-            const original = btn.textContent ?? "";
-            let timer: number | undefined;
             btn.addEventListener("click", async () => {
               const email = btn.dataset.copyEmail;
               if (!email) return;
               try {
                 await navigator.clipboard.writeText(email);
-                btn.textContent = "已复制邮箱";
-                btn.classList.add("is-copied");
-                window.clearTimeout(timer);
-                timer = window.setTimeout(() => {
-                  btn.textContent = original;
-                  btn.classList.remove("is-copied");
-                }, 1800);
+                showToast(`COPIED · ${email}`);
               } catch {
                 window.location.href = `mailto:${email}`;
               }
             });
           });
 
-        document
-          .querySelectorAll<HTMLElement>(".spotlight-surface, .project-card")
-          .forEach((card) => {
-            if (card.dataset.spotlightBound) return;
-            card.dataset.spotlightBound = "true";
-            card.addEventListener(
-              "pointermove",
-              (e) => {
-                const rect = card.getBoundingClientRect();
-                card.style.setProperty("--mx", `${e.clientX - rect.left}px`);
-                card.style.setProperty("--my", `${e.clientY - rect.top}px`);
-              },
-              { passive: true }
-            );
-          });
-
-        const revealEls = document.querySelectorAll<HTMLElement>("[data-reveal]");
+        // Synchronized scroll reveals, self-drawing hairlines & museum curtain plates
+        const els = document.querySelectorAll<HTMLElement>(
+          "[data-reveal], [data-draw], [data-curtain-plate]"
+        );
         if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-          revealEls.forEach((el) => {
-            el.dataset.reveal = "visible";
+          els.forEach((el) => {
+            if ("reveal" in el.dataset) el.dataset.reveal = "visible";
+            if ("draw" in el.dataset) el.dataset.draw = "visible";
+            if ("curtainPlate" in el.dataset) el.dataset.curtainPlate = "visible";
           });
         } else {
           const io = new IntersectionObserver(
             (entries) => {
               entries.forEach((entry) => {
                 if (entry.isIntersecting) {
-                  (entry.target as HTMLElement).dataset.reveal = "visible";
-                  io.unobserve(entry.target);
+                  const target = entry.target as HTMLElement;
+                  if ("reveal" in target.dataset) target.dataset.reveal = "visible";
+                  if ("draw" in target.dataset) target.dataset.draw = "visible";
+                  if ("curtainPlate" in target.dataset) target.dataset.curtainPlate = "visible";
+                  io.unobserve(target);
                 }
               });
             },
-            { threshold: 0.08, rootMargin: "0px 0px -24px 0px" }
+            { threshold: 0.08, rootMargin: "0px 0px -20px 0px" }
           );
-          revealEls.forEach((el) => io.observe(el));
+          els.forEach((el) => io.observe(el));
         }
 
+        // Code copy buttons in notes
         document.querySelectorAll<HTMLPreElement>(".prose pre.astro-code").forEach((pre) => {
           if (pre.parentElement?.classList.contains("code-block-wrap")) return;
           const wrap = document.createElement("div");
@@ -175,27 +462,19 @@ const canonicalURL = new URL(Astro.url.pathname, SITE.url);
           const btn = document.createElement("button");
           btn.type = "button";
           btn.className = "code-copy-btn";
-          btn.textContent = "复制";
-          let timer: number | undefined;
+          btn.textContent = "COPY";
           btn.addEventListener("click", async () => {
-            const text = pre.textContent ?? "";
             try {
-              await navigator.clipboard.writeText(text);
-              btn.textContent = "已复制";
-              btn.classList.add("is-copied");
-              window.clearTimeout(timer);
-              timer = window.setTimeout(() => {
-                btn.textContent = "复制";
-                btn.classList.remove("is-copied");
-              }, 1600);
+              await navigator.clipboard.writeText(pre.textContent ?? "");
+              showToast("COPIED CODE");
             } catch {}
           });
           wrap.appendChild(btn);
         });
       }
 
-      initPageInteractions();
-      document.addEventListener("astro:page-load", initPageInteractions);
+      initPage();
+      document.addEventListener("astro:page-load", initPage);
     </script>
   </body>
 </html>
