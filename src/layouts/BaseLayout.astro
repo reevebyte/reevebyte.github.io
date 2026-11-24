@@ -50,7 +50,6 @@ const canonicalURL = new URL(Astro.url.pathname, SITE.url);
   </head>
   <body>
     <div class="scroll-bar" aria-hidden="true"></div>
-    <div class="cursor-halo" data-cursor-halo aria-hidden="true"></div>
     <Header />
     <main class="site-main">
       <slot />
@@ -135,38 +134,28 @@ const canonicalURL = new URL(Astro.url.pathname, SITE.url);
       }
 
       /* =========================================================
-         UNIFIED 60FPS DAMPED SCROLL + POINTER CHOREOGRAPHY ENGINE
-         Connects Hero Astrolabe, Header Star Emblem, Differential
-         Column Parallax, Footer Winged Victory & Cursor Halo.
+         UNIFIED 60FPS DAMPED SCROLL CHOREOGRAPHY ENGINE
+         Connects Split Hero Aperture Parallax, Header Star Emblem,
+         Differential Column Parallax & Footer Winged Victory.
          ========================================================= */
       const motionState = {
         smoothY: 0,
-        idleAngle: 0,
-        mx: -200,
-        my: -200,
-        cx: -200,
-        cy: -200,
-        pointerVisible: false,
         rafId: 0,
       };
 
       function startUnifiedChoreography() {
         window.cancelAnimationFrame(motionState.rafId);
         const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-        const finePointer = !window.matchMedia("(pointer: coarse)").matches;
         motionState.smoothY = window.scrollY;
 
         const header = document.querySelector<HTMLElement>("[data-site-header]");
         const paper = document.querySelector<HTMLElement>("[data-paper-zone]");
-        const astrolabeStage = document.querySelector<HTMLElement>("[data-astrolabe]");
-        const astrolabeWheel = document.querySelector<HTMLElement>("[data-astrolabe-wheel]");
-        const astrolabeOuter = document.querySelector<HTMLElement>("[data-astrolabe-outer]");
+        const heroArt = document.querySelector<HTMLElement>("[data-hero-art]");
         const heroCopy = document.querySelector<HTMLElement>("[data-hero-copy]");
         const colParallaxes = Array.from(
           document.querySelectorAll<HTMLElement>("[data-col-parallax]")
         );
         const footer = document.querySelector<HTMLElement>("[data-atelier-footer]");
-        const halo = document.querySelector<HTMLElement>("[data-cursor-halo]");
 
         const frame = () => {
           const targetY = window.scrollY;
@@ -194,22 +183,14 @@ const canonicalURL = new URL(Astro.url.pathname, SITE.url);
           }
 
           if (!reduced) {
-            // 3. Scroll-coupled Dürer Celestial Astrolabe (idle drift + scroll spin + subtle depth recession)
-            motionState.idleAngle += 0.04;
-            const wheelDeg = motionState.idleAngle + sy * 0.09;
-            if (astrolabeWheel) {
-              astrolabeWheel.style.transform = `rotate(${wheelDeg.toFixed(2)}deg)`;
-            }
-            if (astrolabeOuter) {
-              astrolabeOuter.style.transform = `rotate(${(-wheelDeg * 0.55).toFixed(2)}deg)`;
-            }
+            // 3. Split Hero architectural aperture parallax
             if (window.innerWidth > 980) {
-              const heroFade = Math.min(sy / 750, 1);
-              if (astrolabeStage) {
-                astrolabeStage.style.transform = `translate3d(0, ${(heroFade * 32).toFixed(1)}px, 0) scale(${(1 - heroFade * 0.05).toFixed(4)})`;
+              const heroFade = Math.min(sy / 780, 1);
+              if (heroArt) {
+                heroArt.style.transform = `translate3d(0, ${(heroFade * 48).toFixed(1)}px, 0) scale(${(1 + heroFade * 0.05).toFixed(4)})`;
               }
               if (heroCopy) {
-                heroCopy.style.transform = `translate3d(0, ${(heroFade * -18).toFixed(1)}px, 0)`;
+                heroCopy.style.transform = `translate3d(0, ${(heroFade * -20).toFixed(1)}px, 0)`;
               }
 
               // 4. Differential vertical parallax across the 3 museum columns
@@ -236,13 +217,6 @@ const canonicalURL = new URL(Astro.url.pathname, SITE.url);
               footer.style.setProperty("--footer-word-y", `${wordY.toFixed(1)}px`);
               footer.style.setProperty("--footer-word-alpha", wordAlpha.toFixed(3));
             }
-
-            // 6. Damped architectural cursor halo
-            if (halo && finePointer && motionState.pointerVisible) {
-              motionState.cx += (motionState.mx - motionState.cx) * 0.16;
-              motionState.cy += (motionState.my - motionState.cy) * 0.16;
-              halo.style.transform = `translate3d(${motionState.cx.toFixed(1)}px, ${motionState.cy.toFixed(1)}px, 0)`;
-            }
           }
 
           motionState.rafId = window.requestAnimationFrame(frame);
@@ -268,28 +242,6 @@ const canonicalURL = new URL(Astro.url.pathname, SITE.url);
             closeCommandPalette();
           }
         });
-        window.addEventListener(
-          "pointermove",
-          (e) => {
-            motionState.mx = e.clientX;
-            motionState.my = e.clientY;
-            if (!motionState.pointerVisible) {
-              motionState.cx = e.clientX;
-              motionState.cy = e.clientY;
-              motionState.pointerVisible = true;
-              document
-                .querySelector<HTMLElement>("[data-cursor-halo]")
-                ?.classList.add("is-visible");
-            }
-          },
-          { passive: true }
-        );
-        window.addEventListener("pointerleave", () => {
-          motionState.pointerVisible = false;
-          document
-            .querySelector<HTMLElement>("[data-cursor-halo]")
-            ?.classList.remove("is-visible");
-        });
       }
 
       function initPage() {
@@ -299,45 +251,8 @@ const canonicalURL = new URL(Astro.url.pathname, SITE.url);
         const finePointer =
           !window.matchMedia("(pointer: coarse)").matches &&
           !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-        const halo = document.querySelector<HTMLElement>("[data-cursor-halo]");
 
         if (finePointer) {
-          // Contextual cursor halo labels
-          document.querySelectorAll<HTMLElement>("[data-cursor]").forEach((el) => {
-            if (el.dataset.cursorBound) return;
-            el.dataset.cursorBound = "true";
-            el.addEventListener("pointerenter", () => {
-              if (!halo) return;
-              halo.textContent = el.dataset.cursor || "";
-              halo.classList.add("is-labeled");
-            });
-            el.addEventListener("pointerleave", () => {
-              if (!halo) return;
-              halo.textContent = "";
-              halo.classList.remove("is-labeled");
-            });
-          });
-
-          // Astrolabe 3D Tilt
-          const astrolabe = document.querySelector<HTMLElement>("[data-astrolabe]");
-          const astrolabeTilt = document.querySelector<HTMLElement>("[data-astrolabe-tilt]");
-          if (astrolabe && astrolabeTilt && !astrolabe.dataset.bound) {
-            astrolabe.dataset.bound = "true";
-            astrolabe.addEventListener(
-              "pointermove",
-              (e) => {
-                const r = astrolabe.getBoundingClientRect();
-                const nx = (e.clientX - r.left) / r.width - 0.5;
-                const ny = (e.clientY - r.top) / r.height - 0.5;
-                astrolabeTilt.style.transform = `rotateY(${(nx * 14).toFixed(1)}deg) rotateX(${(-ny * 14).toFixed(1)}deg)`;
-              },
-              { passive: true }
-            );
-            astrolabe.addEventListener("pointerleave", () => {
-              astrolabeTilt.style.transform = "rotateY(0deg) rotateX(0deg)";
-            });
-          }
-
           // 3D Perspective Tilt + Specular Glint on Museum Masterpiece Plates
           document.querySelectorAll<HTMLElement>("[data-tilt-card]").forEach((card) => {
             if (card.dataset.tiltBound) return;

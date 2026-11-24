@@ -36,7 +36,7 @@ export const PROJECTS: Project[] = [
     name: "reevebyte.github.io",
     summary: "你正在看的个人主页，用 Astro 5 做的静态站点。",
     detail:
-      "基于 Astro 5 构建，使用公版博物馆油画与铜版画素材，包含滚动联动星盘、ScreenTranslate 交互演示、⌘K 快捷面板以及基于 Markdown 的随笔与 RSS 订阅。",
+      "基于 Astro 5 构建，使用公版博物馆油画与铜版画素材，包含全出血分屏构图、ScreenTranslate 交互演示、⌘K 快捷面板以及基于 Markdown 的随笔与 RSS 订阅。",
     year: "2026",
     status: "开源",
     stack: ["Astro 5", "TypeScript", "CSS", "GitHub Actions"],
