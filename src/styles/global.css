@@ -654,20 +654,20 @@ body.on-paper .scroll-bar {
   will-change: transform, clip-path;
 }
 
-/* Synchronized archival curtain wipe on scroll enter */
-.art-plate[data-curtain-plate] {
+/* Synchronized archival curtain wipe on scroll enter (progressive enhancement) */
+html.js-ready .art-plate[data-curtain-plate] {
   clip-path: inset(100% 0 0 0);
 }
 
-.art-plate[data-curtain-plate="visible"] {
+html.js-ready .art-plate[data-curtain-plate="visible"] {
   clip-path: inset(0 0 0 0);
 }
 
-.art-plate[data-curtain-plate] img {
+html.js-ready .art-plate[data-curtain-plate] img {
   transform: scale(1.16);
 }
 
-.art-plate[data-curtain-plate="visible"] img {
+html.js-ready .art-plate[data-curtain-plate="visible"] img {
   transform: scale(1);
 }
 

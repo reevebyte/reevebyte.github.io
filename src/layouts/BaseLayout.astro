@@ -46,6 +46,9 @@ const canonicalURL = new URL(Astro.url.pathname, SITE.url);
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonicalURL} />
     <title>{pageTitle}</title>
+    <script is:inline>
+      document.documentElement.classList.add("js-ready");
+    </script>
     <ClientRouter />
   </head>
   <body>
@@ -339,31 +342,64 @@ const canonicalURL = new URL(Astro.url.pathname, SITE.url);
           });
 
         // Synchronized scroll reveals, self-drawing hairlines & museum curtain plates
-        const els = document.querySelectorAll<HTMLElement>(
-          "[data-reveal], [data-draw], [data-curtain-plate]"
+        const revealEls = Array.from(
+          document.querySelectorAll<HTMLElement>("[data-reveal], [data-draw]")
         );
+        const plateWraps = Array.from(
+          document.querySelectorAll<HTMLElement>(".art-plate-wrap")
+        );
+
+        const markVisible = (el: HTMLElement) => {
+          if ("reveal" in el.dataset) el.dataset.reveal = "visible";
+          if ("draw" in el.dataset) el.dataset.draw = "visible";
+          if (el.classList.contains("art-plate-wrap")) {
+            const plate = el.querySelector<HTMLElement>("[data-curtain-plate]");
+            if (plate) plate.dataset.curtainPlate = "visible";
+          }
+        };
+
+        const checkViewportVisible = () => {
+          const vh = window.innerHeight || 900;
+          for (const el of revealEls) {
+            if (el.dataset.reveal === "visible" || el.dataset.draw === "visible") continue;
+            const r = el.getBoundingClientRect();
+            if (r.top < vh + 80 && r.bottom > -40) markVisible(el);
+          }
+          for (const wrap of plateWraps) {
+            const plate = wrap.querySelector<HTMLElement>("[data-curtain-plate]");
+            if (!plate || plate.dataset.curtainPlate === "visible") continue;
+            const r = wrap.getBoundingClientRect();
+            if (r.top < vh + 120 && r.bottom > -40) markVisible(wrap);
+          }
+        };
+
         if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-          els.forEach((el) => {
-            if ("reveal" in el.dataset) el.dataset.reveal = "visible";
-            if ("draw" in el.dataset) el.dataset.draw = "visible";
-            if ("curtainPlate" in el.dataset) el.dataset.curtainPlate = "visible";
-          });
+          revealEls.forEach(markVisible);
+          plateWraps.forEach(markVisible);
         } else {
+          // Observe unclipped outer wrappers (.art-plate-wrap) so clip-path never zeroes intersectionRatio
           const io = new IntersectionObserver(
             (entries) => {
               entries.forEach((entry) => {
                 if (entry.isIntersecting) {
-                  const target = entry.target as HTMLElement;
-                  if ("reveal" in target.dataset) target.dataset.reveal = "visible";
-                  if ("draw" in target.dataset) target.dataset.draw = "visible";
-                  if ("curtainPlate" in target.dataset) target.dataset.curtainPlate = "visible";
-                  io.unobserve(target);
+                  markVisible(entry.target as HTMLElement);
+                  io.unobserve(entry.target);
                 }
               });
             },
-            { threshold: 0.08, rootMargin: "0px 0px -20px 0px" }
+            { threshold: 0.01, rootMargin: "120px 0px 80px 0px" }
           );
-          els.forEach((el) => io.observe(el));
+          revealEls.forEach((el) => io.observe(el));
+          plateWraps.forEach((wrap) => io.observe(wrap));
+
+          // Immediate + deduplicated passive scroll fallback for rock-solid visibility across all browsers
+          checkViewportVisible();
+          const w = window as unknown as { __reeveScrollCheck?: () => void };
+          if (w.__reeveScrollCheck) {
+            window.removeEventListener("scroll", w.__reeveScrollCheck);
+          }
+          w.__reeveScrollCheck = checkViewportVisible;
+          window.addEventListener("scroll", checkViewportVisible, { passive: true });
         }
 
         // Code copy buttons in notes

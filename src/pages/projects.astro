@@ -37,7 +37,7 @@ import { PROJECTS } from "../data/projects";
                       <img
                         src={project.image}
                         alt={project.imageAlt}
-                        loading={idx === 0 ? "eager" : "lazy"}
+                        decoding="async"
                       />
                       <div class="art-plaque">
                         <span>
